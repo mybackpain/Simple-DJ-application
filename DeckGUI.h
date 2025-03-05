@@ -13,7 +13,6 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 #include "WaveformDisplay.h"
-#include "WaveformDisplayMerged.h"
 
 //==============================================================================
 /*

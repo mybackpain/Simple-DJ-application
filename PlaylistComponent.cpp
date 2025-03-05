@@ -14,10 +14,11 @@
 //==============================================================================
 PlaylistComponent::PlaylistComponent(){
     
-    /*trackTitles.push_back("Track 1");*/
+    trackTitles.push_back("Track 1");
 
-    tableComponent.getHeader().addColumn("Track Title", 1, 400);
+    tableComponent.getHeader().addColumn("Track Title / Description", 1, 400);
     tableComponent.getHeader().addColumn("", 2, 200);
+    tableComponent.getHeader().addColumn("", 3, 200);
     tableComponent.setModel(this);
 
     addAndMakeVisible(tableComponent);
@@ -35,8 +36,7 @@ void PlaylistComponent::paint (juce::Graphics& g){
 
     g.setColour (juce::Colours::white);
     g.setFont (juce::FontOptions (14.0f));
-    g.drawText ("", getLocalBounds(),
-                juce::Justification::centred, true);   // draw some placeholder text
+    g.drawText ("", getLocalBounds(),juce::Justification::centred, true);   // draw some placeholder text
 }
 
 void PlaylistComponent::resized(){
@@ -78,19 +78,20 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
         }
         return textEditor;
     }
-    if (columnId == 2) { // controls play button
-        if (existingComponentToUpdate == nullptr) {
-            juce::TextButton* btn = new juce::TextButton{ "Play" };
-            juce::String id{ std::to_string(rowNumber) };
-            btn->juce::Component::setComponentID(id);
+    if (columnId == 2 || columnId == 3) { // buttons to queue tracks
+        auto* btn = dynamic_cast<juce::TextButton*>(existingComponentToUpdate);
+        if (btn == nullptr) {
+            btn = new juce::TextButton("Play");
+            juce::String id = juce::String(rowNumber) + "-" + juce::String(columnId);
+            btn->setComponentID(id);
             btn->addListener(this);
-            existingComponentToUpdate = btn;
         }
+        return btn;
     }
     return existingComponentToUpdate;
 }
 
 void PlaylistComponent::buttonClicked(juce::Button* button) {
-    int id = std::stoi(button->getComponentID().toStdString());
-    DBG("PlaylistComponent::buttonClicked" << trackTitles[id]);
+    juce::String id = button->getComponentID();
+    DBG("Button clicked: " << id);
 }

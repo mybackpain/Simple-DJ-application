@@ -130,6 +130,5 @@ void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y) {
 }
 
 void DeckGUI::timerCallback() {
-    DBG("DeckGUI::timerCallback, fileLoaded = true");
     waveformDisplay.setPositionRelative(player->getPositionRelative());
 }
