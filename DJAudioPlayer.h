@@ -11,7 +11,7 @@
 #pragma once
 #include <JuceHeader.h>
 
-class DJAudioPlayer : public juce::AudioSource {
+class DJAudioPlayer : public juce::AudioSource, public juce::Timer {
 public:
 
     //constructor and destructor
@@ -31,6 +31,9 @@ public:
     void start();
     void stop();
 
+    void fadeIn();
+    void fadeOut();
+
     double getPositionRelative();
 
 private:
@@ -40,4 +43,11 @@ private:
     juce::AudioTransportSource transportSource; //third layer, wraps AudioFormatReaderSource, allows control of audio playback (backwards forwards etc)
 
     juce::ResamplingAudioSource resampleSource{&transportSource,false,2 };
+
+    enum FadeState { NONE, FADE_IN, FADE_OUT };
+    FadeState fadeState = NONE;
+
+
+    double currentGain = 0.0;
+    void timerCallback();
 };

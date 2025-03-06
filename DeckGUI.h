@@ -46,6 +46,8 @@ private:
     juce::TextButton playButton{ "PLAY" };
     juce::TextButton stopButton{ "STOP" };
     juce::TextButton loadButton{ "LOAD" };
+    juce::TextButton fadeInButton{ "FADE IN" };
+    juce::TextButton fadeOutButton{ "FADE OUT" };
 
     juce::Slider volumeSlider{};
     juce::Slider speedSlider{};

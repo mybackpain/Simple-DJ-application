@@ -79,3 +79,48 @@ void DJAudioPlayer::stop() {
 double DJAudioPlayer::getPositionRelative() {
     return transportSource.getCurrentPosition() / transportSource.getLengthInSeconds();
 }
+
+//start playing music, increase gain from 0 to 1
+void DJAudioPlayer::fadeIn() {
+    currentGain = 0.0;
+    fadeState = FADE_IN;
+    transportSource.start();
+    startTimer(100);
+}
+
+//stop playing music, increase gain from 0 to 1
+void DJAudioPlayer::fadeOut() {
+    fadeState = FADE_OUT;
+    startTimer(100);
+}
+
+void DJAudioPlayer::timerCallback() {
+    double gain_change = 0.05;
+    double play_volume = 1.0;
+
+    //fade in or stop
+    if (fadeState == FADE_IN) {
+        if (currentGain < play_volume) {
+            currentGain += gain_change;
+            if (currentGain > play_volume) currentGain = play_volume;
+            setGain(currentGain);
+        }
+        else {
+            fadeState = NONE;
+            stopTimer();
+        }
+    }
+    //fade out or stop
+    else if (fadeState == FADE_OUT) {
+        if (currentGain > 0.0) {
+            currentGain -= gain_change;
+            if (currentGain < 0.0) currentGain = 0.0;
+            setGain(currentGain);
+        }
+        else {
+            fadeState = NONE;
+            stopTimer();
+            transportSource.stop();
+        }
+    }
+}

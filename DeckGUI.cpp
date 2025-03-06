@@ -24,10 +24,14 @@ DeckGUI::DeckGUI(
     addAndMakeVisible(playButton);
     addAndMakeVisible(stopButton);
     addAndMakeVisible(loadButton);
+    addAndMakeVisible(fadeInButton);
+    addAndMakeVisible(fadeOutButton);
 
     playButton.addListener(this);
     stopButton.addListener(this);
     loadButton.addListener(this);
+    fadeInButton.addListener(this);
+    fadeOutButton.addListener(this);
 
     addAndMakeVisible(volumeSlider);
     addAndMakeVisible(speedSlider);
@@ -65,15 +69,18 @@ void DeckGUI::paint (juce::Graphics& g) {
 
 void DeckGUI::resized() {
     DBG("MainComponent::resized");
-
     double rowH = getHeight() / 8;
-    playButton.setBounds(0, 0, getWidth(), rowH);
-    stopButton.setBounds(0, rowH, getWidth(), rowH);
-    volumeSlider.setBounds(0, rowH * 2, getWidth(), rowH);
-    speedSlider.setBounds(0, rowH * 3, getWidth(), rowH);
-    posSlider.setBounds(0, rowH * 4, getWidth(), rowH);
-    waveformDisplay.setBounds(0, rowH * 5, getWidth(), rowH * 2);
-    loadButton.setBounds(0, rowH * 7, getWidth(), rowH);
+    double rowW = getWidth() / 6;
+
+    waveformDisplay.setBounds(0 * rowW, 1 * rowH, rowW * 6, rowH * 1);
+    speedSlider.setBounds(0 * rowW, 2 * rowH, rowW * 3, rowH * 1);
+    posSlider.setBounds(3 * rowW, 2 * rowH, rowW * 3, rowH * 1);
+    volumeSlider.setBounds(0 * rowW, 4 * rowH, rowW * 6, rowH * 1);
+    fadeInButton.setBounds(0 * rowW + rowW / 6, 7 * rowH, rowW * 1, rowH * 1);
+    playButton.setBounds(1 * rowW + rowW / 6 * 2, 7 * rowH, rowW * 1, rowH * 1);
+    stopButton.setBounds(2 * rowW + rowW / 6 * 3, 7 * rowH, rowW * 1, rowH * 1);
+    fadeOutButton.setBounds(3 * rowW + rowW / 6 * 4, 7 * rowH, rowW * 1, rowH * 1);
+    loadButton.setBounds(4 * rowW + rowW / 6 * 5, 7 * rowH, rowW * 1, rowH * 1);
 }
 
 void DeckGUI::buttonClicked(juce::Button* button) {
@@ -96,6 +103,14 @@ void DeckGUI::buttonClicked(juce::Button* button) {
                     waveformDisplay.loadURL(juce::URL{ chosenFile });
                 });
         }
+    }
+    if (button == &fadeInButton) {
+        DBG("MainComponent::buttonClicked fadeInButton");
+        player->fadeIn();
+    }
+    if (button == &fadeOutButton) {
+        DBG("MainComponent::buttonClicked fadeOutButton");
+        player->fadeOut();
     }
 }
 
