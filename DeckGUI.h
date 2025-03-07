@@ -43,6 +43,9 @@ public:
 
 private:
 
+    juce::Label fileNameLabel;
+    void updateFileName(const juce::String fileName);
+
     juce::TextButton playButton{ "PLAY" };
     juce::TextButton stopButton{ "STOP" };
     juce::TextButton loadButton{ "LOAD" };
@@ -52,6 +55,9 @@ private:
     juce::Slider volumeSlider{};
     juce::Slider speedSlider{};
     juce::Slider posSlider{};
+
+    juce::TextEditor speedLabel;
+    juce::TextEditor volumeLabel;
 
     DJAudioPlayer* player;
 

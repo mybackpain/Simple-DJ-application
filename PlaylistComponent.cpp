@@ -7,15 +7,11 @@
 
   ==============================================================================
 */
-
 #include <JuceHeader.h>
 #include "PlaylistComponent.h"
 
 //==============================================================================
 PlaylistComponent::PlaylistComponent(){
-    
-    trackTitles.push_back("Track 1");
-    trackTitles.push_back("Track 2");
 
     tableComponent.getHeader().addColumn("Track Title / Description", 1, 400);
     tableComponent.getHeader().addColumn("", 2, 200);
@@ -37,7 +33,7 @@ void PlaylistComponent::paint (juce::Graphics& g){
 
     g.setColour (juce::Colours::white);
     g.setFont (juce::FontOptions (14.0f));
-    g.drawText ("", getLocalBounds(),juce::Justification::centred, true);   // draw some placeholder text
+    g.drawText ("Drag files here to add them to your playlist", getLocalBounds(),juce::Justification::centredTop, true);   // draw some placeholder text
 }
 
 void PlaylistComponent::resized(){
@@ -67,6 +63,7 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
         if (textEditor == nullptr) {
             textEditor = new juce::TextEditor();
             textEditor->setText(trackTitles[rowNumber]);  // create placeholding text
+            textEditor->setJustification(juce::Justification::left); 
             textEditor->setMultiLine(false);
             textEditor->setReturnKeyStartsNewLine(false);
             textEditor->setScrollbarsShown(false);
@@ -79,10 +76,20 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
         }
         return textEditor;
     }
-    if (columnId == 2 || columnId == 3) { // buttons to queue tracks
+    if (columnId == 2) { // buttons to queue tracks
         auto* btn = dynamic_cast<juce::TextButton*>(existingComponentToUpdate);
         if (btn == nullptr) {
-            btn = new juce::TextButton("Play");
+            btn = new juce::TextButton("Push to Deck 1");
+            juce::String id = juce::String(rowNumber) + "-" + juce::String(columnId);
+            btn->setComponentID(id);
+            btn->addListener(this);
+        }
+        return btn;
+    }
+    if (columnId == 3) { // buttons to queue tracks
+        auto* btn = dynamic_cast<juce::TextButton*>(existingComponentToUpdate);
+        if (btn == nullptr) {
+            btn = new juce::TextButton("Push to Deck 2");
             juce::String id = juce::String(rowNumber) + "-" + juce::String(columnId);
             btn->setComponentID(id);
             btn->addListener(this);
@@ -94,5 +101,28 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
 
 void PlaylistComponent::buttonClicked(juce::Button* button) {
     juce::String id = button->getComponentID();
-    DBG("Button clicked: " << id);
+
+    std::string delimiter = "-";
+    juce::StringArray tokens;
+    tokens.addTokens(id, delimiter, "\"");
+    
+    for (int i = 0; i < tokens.size(); ++i)
+    {
+        DBG(tokens[i]); // Print each token to the debugger
+    }
+}
+
+bool PlaylistComponent::isInterestedInFileDrag(const juce::StringArray& files) {
+    DBG("PlaylistComponent::isInterestedInFileDrag");
+    return true;
+}
+
+void PlaylistComponent::filesDropped(const juce::StringArray& files, int x, int y) {
+    for (const auto& filePath : files) {
+        juce::File file(filePath);
+        trackTitles.push_back(file.getFullPathName());
+        fileLocation.push_back(file.getFullPathName());
+    }
+    tableComponent.updateContent();
+    DBG("PlaylistComponent::filesDropped");
 }

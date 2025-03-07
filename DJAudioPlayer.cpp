@@ -21,7 +21,6 @@ void DJAudioPlayer::prepareToPlay(int samplesPerBlockExpected, double sampleRate
     resampleSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
 void DJAudioPlayer::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) {
-    //transportSource.getNextAudioBlock(bufferToFill);
     resampleSource.getNextAudioBlock(bufferToFill);
 }
 void DJAudioPlayer::releaseResources() {
@@ -38,7 +37,7 @@ void DJAudioPlayer::loadURL(juce::URL audioURL) {
     }
 }
 void DJAudioPlayer::setGain(double gain) {
-    if (gain < 0 || gain > 1) {
+    if (gain < 0 || gain > 2) {
         DBG("DJAudioPlayer::setGain set between 0 and 1");
     }
     else {
@@ -46,7 +45,7 @@ void DJAudioPlayer::setGain(double gain) {
     }
 }
 void DJAudioPlayer::setSpeed(double ratio) {
-    if (ratio < 0 || ratio > 10) {
+    if (ratio < 0 || ratio > 2) {
         DBG("DJAudioPlayer::setSpeed set between 0 and 10");
     }
     else {

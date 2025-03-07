@@ -18,7 +18,8 @@
 class PlaylistComponent  : 
     public juce::Component,
     public juce::TableListBoxModel,
-    public juce::Button::Listener
+    public juce::Button::Listener,
+    public juce::FileDragAndDropTarget
 {
 public:
     PlaylistComponent();
@@ -37,12 +38,17 @@ public:
     //minimum requirements (the pure virtual fn), for Button::Listener
     void buttonClicked(juce::Button* button) override;
 
+    std::vector<juce::String> trackTitles; //stores typed text
+    std::vector<juce::String> fileLocation; //stores unaltered file location of music
+
 private:
 
     juce::TableListBox tableComponent;
 
     juce::TextEditor trackTitleEditor; //the text editor
-    std::vector<juce::String> trackTitles; //now stores typed text
+
+    bool isInterestedInFileDrag(const juce::StringArray& files);
+    void filesDropped(const juce::StringArray& files, int x, int y);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PlaylistComponent)
 };

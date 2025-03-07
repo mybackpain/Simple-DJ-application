@@ -22,34 +22,63 @@ DeckGUI::DeckGUI(
     waveformDisplay(formatManagerToUse, cacheToUse)
 {
     addAndMakeVisible(playButton);
-    addAndMakeVisible(stopButton);
-    addAndMakeVisible(loadButton);
-    addAndMakeVisible(fadeInButton);
-    addAndMakeVisible(fadeOutButton);
-
     playButton.addListener(this);
+
+    addAndMakeVisible(stopButton);
     stopButton.addListener(this);
+
+    addAndMakeVisible(loadButton);
     loadButton.addListener(this);
+
+    addAndMakeVisible(fadeInButton);
     fadeInButton.addListener(this);
+
+    addAndMakeVisible(fadeOutButton);
     fadeOutButton.addListener(this);
 
-    addAndMakeVisible(volumeSlider);
+    addAndMakeVisible(speedLabel);
+    speedLabel.setText("Speed");
+    speedLabel.setReadOnly(true);
+    speedLabel.setColour(juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
+    speedLabel.setColour(juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
+    speedLabel.setJustification(juce::Justification::centred);
+
     addAndMakeVisible(speedSlider);
-    addAndMakeVisible(posSlider);
-
-    volumeSlider.addListener(this);
+    speedSlider.setSliderStyle(juce::Slider::LinearVertical);
     speedSlider.addListener(this);
-    posSlider.addListener(this);
-
-    volumeSlider.setRange(0.1, 1.0);
     speedSlider.setRange(0.1, 2.0);
+    speedSlider.setValue(1.0);
+    speedSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+
+    addAndMakeVisible(posSlider);
+    posSlider.addListener(this);
     posSlider.setRange(0.1, 1.0);
+    //posSlider.setValue(DJAudioPlayer::getPositionRelative());
+
+    addAndMakeVisible(volumeLabel);
+    volumeLabel.setText("Volume");
+    volumeLabel.setReadOnly(true);
+    volumeLabel.setColour(juce::TextEditor::outlineColourId, juce::Colours::transparentBlack);
+    volumeLabel.setColour(juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
+    volumeLabel.setJustification(juce::Justification::centred);
+
+    addAndMakeVisible(volumeSlider);
+    volumeSlider.setSliderStyle(juce::Slider::LinearVertical);
+    volumeSlider.addListener(this);
+    volumeSlider.setRange(0.1, 2.0);
+    volumeSlider.setValue(1.0);
+    volumeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
 
     startTimer(500);
 
     addAndMakeVisible(waveformDisplay);
-}
 
+    addAndMakeVisible(fileNameLabel);
+    fileNameLabel.setJustificationType(juce::Justification::centred);
+    fileNameLabel.setColour(juce::Label::textColourId, juce::Colours::white);
+    fileNameLabel.setFont(juce::Font(14.0f, juce::Font::bold));
+
+}
 
 DeckGUI::~DeckGUI()
 {
@@ -57,14 +86,32 @@ DeckGUI::~DeckGUI()
 }
 
 void DeckGUI::paint (juce::Graphics& g) {
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear background
 
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.setColour (juce::Colours::grey); // draw outline around DeckGUI
+    g.drawRect (getLocalBounds(), 1);
+    
+    g.setColour(juce::Colours::black); // draw black "record disk"
+    if (getWidth() > getHeight()) {
+        double record_radius = getHeight() / 4  - 10;
+        g.fillEllipse(
+            (getWidth() / 2) - record_radius,
+            getHeight() / 8 * 3,
+            record_radius*2,
+            record_radius*2);
+    }
+    else {
+        double record_radius = getWidth() / 4 - 10;
+        g.fillEllipse(
+            (getWidth() / 2) - record_radius,
+            getHeight() / 8 * 5 - record_radius,
+            record_radius * 2,
+            record_radius * 2);
+    }
 
     g.setColour (juce::Colours::white);
     g.setFont (juce::FontOptions (14.0f));
-    g.drawText ("DeckGUI", getLocalBounds(), juce::Justification::centred, true);   // draw some placeholder text
+    g.drawText ("", getLocalBounds(), juce::Justification::topLeft, true);
 }
 
 void DeckGUI::resized() {
@@ -72,10 +119,15 @@ void DeckGUI::resized() {
     double rowH = getHeight() / 8;
     double rowW = getWidth() / 6;
 
-    waveformDisplay.setBounds(0 * rowW, 1 * rowH, rowW * 6, rowH * 1);
-    speedSlider.setBounds(0 * rowW, 2 * rowH, rowW * 3, rowH * 1);
-    posSlider.setBounds(3 * rowW, 2 * rowH, rowW * 3, rowH * 1);
-    volumeSlider.setBounds(0 * rowW, 4 * rowH, rowW * 6, rowH * 1);
+    fileNameLabel.setBounds(0 * rowW, 0 * rowH, rowW * 6, rowH * 1);
+    waveformDisplay.setBounds(0 * rowW, 1 * rowH, getWidth(), rowH * 1);
+
+    speedLabel.setBounds(0 * rowW, 2 * rowH, rowW * 1, rowH * 1);
+    posSlider.setBounds(1 * rowW, 2 * rowH, rowW * 4, rowH * 1);
+    volumeLabel.setBounds(5 * rowW, 2 * rowH, rowW * 1, rowH * 1);
+    speedSlider.setBounds(0 * rowW, 3 * rowH, rowW * 1, rowH * 4);
+    volumeSlider.setBounds(5 * rowW, 3 * rowH, rowW * 1, rowH * 4);
+    
     fadeInButton.setBounds(0 * rowW + rowW / 6, 7 * rowH, rowW * 1, rowH * 1);
     playButton.setBounds(1 * rowW + rowW / 6 * 2, 7 * rowH, rowW * 1, rowH * 1);
     stopButton.setBounds(2 * rowW + rowW / 6 * 3, 7 * rowH, rowW * 1, rowH * 1);
@@ -101,6 +153,7 @@ void DeckGUI::buttonClicked(juce::Button* button) {
                     juce::File chosenFile = chooser.getResult();
                     player->loadURL(juce::URL{ chosenFile });
                     waveformDisplay.loadURL(juce::URL{ chosenFile });
+                    updateFileName(chosenFile.getFileName());
                 });
         }
     }
@@ -136,12 +189,30 @@ bool DeckGUI::isInterestedInFileDrag(const juce::StringArray& files) {
     DBG("File dragged");
     return true;
 }
+
 void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y) {
     DBG("File dropped");
     if (files.size() == 1) {
-        player->loadURL(juce::URL{ juce::File{files[0]} });
-        DBG("DeckGUI::timerCallback, fileLoaded set to true");
+        juce::File file{ files[0] };  // Convert the first string to a juce::File
+        player->loadURL(juce::URL{ file });
+        updateFileName(file.getFileNameWithoutExtension()); // Correct function call
+        DBG("DeckGUI::filesDropped, fileLoaded set to true");
     }
+}
+
+//cleans file name of file type
+void DeckGUI::updateFileName(juce::String fileName) {
+    juce::String editedFileName = fileName;
+    juce::StringArray replaced_word = { ".mp3", ".wav" };
+    for (auto& wordToReplace : replaced_word) {
+        int pos = fileName.indexOf(wordToReplace);
+        if (pos != -1) { // Ensure the substring exists before replacing
+            editedFileName = fileName.replaceSection(pos, wordToReplace.length(), "");
+        }
+    }
+    fileNameLabel.setText("Playing: " + editedFileName, juce::dontSendNotification);
+    fileNameLabel.setFont(juce::Font("Arial", 16.0f, juce::Font::bold));
+    fileNameLabel.setColour(juce::Label::textColourId, juce::Colours::lightblue);
 }
 
 void DeckGUI::timerCallback() {
