@@ -11,7 +11,7 @@
 #include "PlaylistComponent.h"
 
 //==============================================================================
-PlaylistComponent::PlaylistComponent(){
+PlaylistComponent::PlaylistComponent() {
 
     tableComponent.getHeader().addColumn("Track Title / Description", 1, 400);
     tableComponent.getHeader().addColumn("", 2, 200);
@@ -21,22 +21,22 @@ PlaylistComponent::PlaylistComponent(){
     addAndMakeVisible(tableComponent);
 }
 
-PlaylistComponent::~PlaylistComponent(){
+PlaylistComponent::~PlaylistComponent() {
 }
 
-void PlaylistComponent::paint (juce::Graphics& g){
+void PlaylistComponent::paint(juce::Graphics& g) {
 
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear the background
 
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.setColour(juce::Colours::grey);
+    g.drawRect(getLocalBounds(), 1);   // draw an outline around the component
 
-    g.setColour (juce::Colours::white);
-    g.setFont (juce::FontOptions (14.0f));
-    g.drawText ("Drag files here to add them to your playlist", getLocalBounds(),juce::Justification::centredTop, true);   // draw some placeholder text
+    g.setColour(juce::Colours::white);
+    g.setFont(juce::FontOptions(14.0f));
+    g.drawText("Drag files here to add them to your playlist", getLocalBounds(), juce::Justification::centredTop, true);   // draw some placeholder text
 }
 
-void PlaylistComponent::resized(){
+void PlaylistComponent::resized() {
     tableComponent.setBounds(0, 0, getWidth(), getHeight());
     trackTitleEditor.setBounds(0, 0, getWidth() - 20, 30);
 }
@@ -53,7 +53,7 @@ void PlaylistComponent::paintRowBackground(juce::Graphics& g, int rowNumber, int
     }
 }
 void PlaylistComponent::paintCell(juce::Graphics& g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) {
-    g.drawText(trackTitles[rowNumber],2,0,width-4,height-2, juce::Justification::centredLeft,true);
+    g.drawText(trackTitles[rowNumber], 2, 0, width - 4, height - 2, juce::Justification::centredLeft, true);
 }
 
 juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int columnId, bool isRowSelected, juce::Component* existingComponentToUpdate) {
@@ -63,7 +63,7 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
         if (textEditor == nullptr) {
             textEditor = new juce::TextEditor();
             textEditor->setText(trackTitles[rowNumber]);  // create placeholding text
-            textEditor->setJustification(juce::Justification::left); 
+            textEditor->setJustification(juce::Justification::left);
             textEditor->setMultiLine(false);
             textEditor->setReturnKeyStartsNewLine(false);
             textEditor->setScrollbarsShown(false);
@@ -72,7 +72,7 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
                 if (rowNumber >= 0 && rowNumber < static_cast<int>(trackTitles.size())) {
                     trackTitles[rowNumber] = textEditor->getText().toStdString();
                 }
-            };
+                };
         }
         return textEditor;
     }
@@ -99,18 +99,61 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
     return existingComponentToUpdate;
 }
 
-void PlaylistComponent::buttonClicked(juce::Button* button) {
-    juce::String id = button->getComponentID();
+//void PlaylistComponent::buttonClicked(juce::Button* button) {
+//    juce::String id = button->getComponentID();
+//
+//    std::string delimiter = "-";
+//    juce::StringArray tokens;
+//    tokens.addTokens(id, delimiter, "\"");
+//
+//    for (int i = 0; i < tokens.size(); ++i)
+//    {
+//        DBG(tokens[i]); // Print each token to the debugger
+//    }
+//}
 
-    std::string delimiter = "-";
-    juce::StringArray tokens;
-    tokens.addTokens(id, delimiter, "\"");
+void PlaylistComponent::buttonClicked(juce::Button* button) {
+    juce::String id = button->getComponentID(); 
+    DBG("Button clicked: " + id);
+
     
-    for (int i = 0; i < tokens.size(); ++i)
-    {
-        DBG(tokens[i]); // Print each token to the debugger
+    juce::StringArray tokens;
+    tokens.addTokens(id, "-", ""); //first token is the row number, second token is the position of stored file address in fileLocation array
+
+    if (tokens.size() < 2) {
+        DBG("PlaylistComponent::buttonClicked - Invalid button ID format");
+        return;
+    }
+
+    int fileIndex = tokens[0].getIntValue();
+    int deckNumber = tokens[1].getIntValue() - 1; //column 2 = deck 1, column 3 = deck 2
+    DBG("deckNum: " << deckNumber << " address pos in array: " << fileIndex);
+
+    if (deckNumber < 1 || deckNumber > globalFileQueue.size()) {
+        DBG("PlaylistComponent::buttonClicked - Invalid deck number");
+        return;
+    }
+
+    // Get the file path from the stored playlist
+    if (fileIndex >= 0 && fileIndex < fileLocation.size()) {
+        juce::String filePath = fileLocation[fileIndex];
+
+        // Store the file path in the correct deck queue
+        globalFileQueue.getReference(deckNumber - 1).add(filePath);
+        DBG("PlaylistComponent::buttonClicked - Added file to Deck " + juce::String(deckNumber));
+
+        if (deckNumber == 0) {
+            deckGUI1->loadFile(filePath);
+        }
+        else if (deckNumber == 1) {
+            deckGUI2->loadFile(filePath);
+        }
+    }
+    else {
+        DBG("PlaylistComponent::buttonClicked - Invalid file index");
     }
 }
+
 
 bool PlaylistComponent::isInterestedInFileDrag(const juce::StringArray& files) {
     DBG("PlaylistComponent::isInterestedInFileDrag");

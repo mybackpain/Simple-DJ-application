@@ -5,25 +5,27 @@ MainComponent::MainComponent()
 {
     // Make sure you set the size of the component after
     // you add any child components.
-    setSize (800, 600);
+    setSize(800, 600);
 
     // Some platforms require permissions to open input channels so request that here
-    if (juce::RuntimePermissions::isRequired (juce::RuntimePermissions::recordAudio)
-        && ! juce::RuntimePermissions::isGranted (juce::RuntimePermissions::recordAudio))
+    if (juce::RuntimePermissions::isRequired(juce::RuntimePermissions::recordAudio)
+        && !juce::RuntimePermissions::isGranted(juce::RuntimePermissions::recordAudio))
     {
-        juce::RuntimePermissions::request (juce::RuntimePermissions::recordAudio,
-                                           [&] (bool granted) { setAudioChannels (granted ? 2 : 0, 2); });
+        juce::RuntimePermissions::request(juce::RuntimePermissions::recordAudio,
+            [&](bool granted) { setAudioChannels(granted ? 2 : 0, 2); });
     }
     else
     {
         // Specify the number of input and output channels that we want to open
-        setAudioChannels (2, 2);
+        setAudioChannels(2, 2);
     }
     addAndMakeVisible(deckGUI1);
     addAndMakeVisible(deckGUI2);
     addAndMakeVisible(playlistComponent);
 
     formatManager.registerBasicFormats();
+
+    initializeGlobalState();
 }
 
 MainComponent::~MainComponent()
@@ -33,7 +35,7 @@ MainComponent::~MainComponent()
 }
 
 //==============================================================================
-void MainComponent::prepareToPlay (int samplesPerBlockExpected, double sampleRate){
+void MainComponent::prepareToPlay(int samplesPerBlockExpected, double sampleRate) {
     mixerSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
     mixerSource.addInputSource(&player1, false);
     mixerSource.addInputSource(&player2, false);
@@ -51,10 +53,10 @@ void MainComponent::releaseResources() {
 }
 
 //==============================================================================
-void MainComponent::paint (juce::Graphics& g)
+void MainComponent::paint(juce::Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
     // You can add your drawing code here!
 
@@ -65,8 +67,8 @@ void MainComponent::paint (juce::Graphics& g)
     g.drawText(" ", getLocalBounds(), juce::Justification::centred, true);
 }
 
-void MainComponent::resized(){
-    deckGUI1.setBounds(0, 0, getWidth() / 2, getHeight() *2 / 3);
+void MainComponent::resized() {
+    deckGUI1.setBounds(0, 0, getWidth() / 2, getHeight() * 2 / 3);
     deckGUI2.setBounds(getWidth() / 2, 0, getWidth() / 2, getHeight() * 2 / 3);
     playlistComponent.setBounds(0, getHeight() / 3 * 2, getWidth(), getHeight() / 3);
 }

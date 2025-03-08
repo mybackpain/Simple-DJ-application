@@ -85,20 +85,20 @@ DeckGUI::~DeckGUI()
     stopTimer();
 }
 
-void DeckGUI::paint (juce::Graphics& g) {
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear background
+void DeckGUI::paint(juce::Graphics& g) {
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear background
 
-    g.setColour (juce::Colours::grey); // draw outline around DeckGUI
-    g.drawRect (getLocalBounds(), 1);
-    
+    g.setColour(juce::Colours::grey); // draw outline around DeckGUI
+    g.drawRect(getLocalBounds(), 1);
+
     g.setColour(juce::Colours::black); // draw black "record disk"
     if (getWidth() > getHeight()) {
-        double record_radius = getHeight() / 4  - 10;
+        double record_radius = getHeight() / 4 - 10;
         g.fillEllipse(
             (getWidth() / 2) - record_radius,
             getHeight() / 8 * 3,
-            record_radius*2,
-            record_radius*2);
+            record_radius * 2,
+            record_radius * 2);
     }
     else {
         double record_radius = getWidth() / 4 - 10;
@@ -109,9 +109,9 @@ void DeckGUI::paint (juce::Graphics& g) {
             record_radius * 2);
     }
 
-    g.setColour (juce::Colours::white);
-    g.setFont (juce::FontOptions (14.0f));
-    g.drawText ("", getLocalBounds(), juce::Justification::topLeft, true);
+    g.setColour(juce::Colours::white);
+    g.setFont(juce::FontOptions(14.0f));
+    g.drawText("", getLocalBounds(), juce::Justification::topLeft, true);
 }
 
 void DeckGUI::resized() {
@@ -127,7 +127,7 @@ void DeckGUI::resized() {
     volumeLabel.setBounds(5 * rowW, 2 * rowH, rowW * 1, rowH * 1);
     speedSlider.setBounds(0 * rowW, 3 * rowH, rowW * 1, rowH * 4);
     volumeSlider.setBounds(5 * rowW, 3 * rowH, rowW * 1, rowH * 4);
-    
+
     fadeInButton.setBounds(0 * rowW + rowW / 6, 7 * rowH, rowW * 1, rowH * 1);
     playButton.setBounds(1 * rowW + rowW / 6 * 2, 7 * rowH, rowW * 1, rowH * 1);
     stopButton.setBounds(2 * rowW + rowW / 6 * 3, 7 * rowH, rowW * 1, rowH * 1);
@@ -147,13 +147,13 @@ void DeckGUI::buttonClicked(juce::Button* button) {
     if (button == &loadButton) {
         DBG("MainComponent::buttonClicked loadButton");
         juce::FileChooser chooser{ "Select file" };
-        if (button == &loadButton){
+        if (button == &loadButton) {
             auto fileChooserFlags = juce::FileBrowserComponent::canSelectFiles; //configure the dialogue
-            fChooser.launchAsync(fileChooserFlags, [this](const juce::FileChooser& chooser){ //launch out of the main thread using lambda function
-                    juce::File chosenFile = chooser.getResult();
-                    player->loadURL(juce::URL{ chosenFile });
-                    waveformDisplay.loadURL(juce::URL{ chosenFile });
-                    updateFileName(chosenFile.getFileName());
+            fChooser.launchAsync(fileChooserFlags, [this](const juce::FileChooser& chooser) { //launch out of the main thread using lambda function
+                juce::File chosenFile = chooser.getResult();
+                player->loadURL(juce::URL{ chosenFile });
+                waveformDisplay.loadURL(juce::URL{ chosenFile });
+                updateFileName(chosenFile.getFileName());
                 });
         }
     }

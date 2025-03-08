@@ -42,7 +42,7 @@ private:
     std::unique_ptr<juce::AudioFormatReaderSource> readerSource; //second layer, wrap reader into audio source, reads audio file, downloads data into numerical array
     juce::AudioTransportSource transportSource; //third layer, wraps AudioFormatReaderSource, allows control of audio playback (backwards forwards etc)
 
-    juce::ResamplingAudioSource resampleSource{&transportSource,false,2 };
+    juce::ResamplingAudioSource resampleSource{ &transportSource,false,2 };
 
     enum FadeState { NONE, FADE_IN, FADE_OUT };
     FadeState fadeState = NONE;

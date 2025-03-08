@@ -17,17 +17,17 @@
 //==============================================================================
 /*
 */
-class DeckGUI  :    public juce::Component,
-                    public juce::Button::Listener,
-                    public juce::Slider::Listener,
-                    public juce::FileDragAndDropTarget,
-                    public juce::Timer
+class DeckGUI : public juce::Component,
+    public juce::Button::Listener,
+    public juce::Slider::Listener,
+    public juce::FileDragAndDropTarget,
+    public juce::Timer
 {
 public:
     DeckGUI(DJAudioPlayer* player, juce::AudioFormatManager& formatManagerToUse, juce::AudioThumbnailCache& cacheToUse);
     ~DeckGUI() override;
 
-    void paint (juce::Graphics&) override;
+    void paint(juce::Graphics&) override;
     void resized() override;
 
     //button listener
@@ -65,5 +65,5 @@ private:
 
     juce::FileChooser fChooser{ "Select a file" };
 
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DeckGUI)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeckGUI)
 };
