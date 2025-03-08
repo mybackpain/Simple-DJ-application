@@ -77,7 +77,12 @@ DeckGUI::DeckGUI(
     fileNameLabel.setJustificationType(juce::Justification::centred);
     fileNameLabel.setColour(juce::Label::textColourId, juce::Colours::white);
     fileNameLabel.setFont(juce::Font(14.0f, juce::Font::bold));
-
+    
+    juce::File recordImageFile1 = juce::File::getCurrentWorkingDirectory().getChildFile("recordCover1.jpg");
+    if (recordImageFile1.existsAsFile()) {
+        recordCover1 = juce::ImageFileFormat::loadFrom(recordImageFile1);
+        DBG("Record image 1 loaded");
+    }
 }
 
 DeckGUI::~DeckGUI()
@@ -86,32 +91,38 @@ DeckGUI::~DeckGUI()
 }
 
 void DeckGUI::paint(juce::Graphics& g) {
-    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear background
+    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
 
-    g.setColour(juce::Colours::grey); // draw outline around DeckGUI
+    g.setColour(juce::Colours::grey); // create outline around DeckGUI instance
     g.drawRect(getLocalBounds(), 1);
 
     g.setColour(juce::Colours::black); // draw black "record disk"
+    double recordRadius = getHeight() / 4 - 10;
+    double recordCenterX = getWidth() / 2.0;
+    double recordCenterY;
     if (getWidth() > getHeight()) {
-        double record_radius = getHeight() / 4 - 10;
-        g.fillEllipse(
-            (getWidth() / 2) - record_radius,
-            getHeight() / 8 * 3,
-            record_radius * 2,
-            record_radius * 2);
+        recordCenterY = getHeight() / 8 * 3 + recordRadius;
     }
     else {
-        double record_radius = getWidth() / 4 - 10;
-        g.fillEllipse(
-            (getWidth() / 2) - record_radius,
-            getHeight() / 8 * 5 - record_radius,
-            record_radius * 2,
-            record_radius * 2);
+        recordCenterY = getHeight() / 8 * 5;
     }
+    g.fillEllipse(recordCenterX - recordRadius, recordCenterY - recordRadius, recordRadius * 2, recordRadius * 2);
 
-    g.setColour(juce::Colours::white);
-    g.setFont(juce::FontOptions(14.0f));
-    g.drawText("", getLocalBounds(), juce::Justification::topLeft, true);
+    if (recordCover1.isValid()) { // draw record label image
+        double labelRadius = recordRadius * 0.5; 
+
+        juce::Path circularMask;
+        circularMask.addEllipse(recordCenterX - labelRadius, recordCenterY - labelRadius, labelRadius * 2, labelRadius * 2);
+        g.reduceClipRegion(circularMask); 
+
+        g.setImageResamplingQuality(juce::Graphics::highResamplingQuality);
+        juce::Rectangle<float> labelArea(recordCenterX - labelRadius, recordCenterY - labelRadius, labelRadius * 2, labelRadius * 2);
+        g.drawImage(recordCover1, labelArea, juce::RectanglePlacement::centred);
+    }
+    else {
+        g.setColour(juce::Colours::red);
+        g.drawText("No Image Loaded", getLocalBounds(), juce::Justification::centred);
+    }
 }
 
 void DeckGUI::resized() {
@@ -203,8 +214,8 @@ void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y) {
 //cleans file name of file type
 void DeckGUI::updateFileName(juce::String fileName) {
     juce::String editedFileName = fileName;
-    juce::StringArray replaced_word = { ".mp3", ".wav" };
-    for (auto& wordToReplace : replaced_word) {
+    juce::StringArray replacedWord = { ".mp3", ".wav" };
+    for (auto& wordToReplace : replacedWord) {
         int pos = fileName.indexOf(wordToReplace);
         if (pos != -1) { // Ensure the substring exists before replacing
             editedFileName = fileName.replaceSection(pos, wordToReplace.length(), "");

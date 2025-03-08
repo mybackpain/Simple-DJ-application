@@ -12,7 +12,6 @@
 
 #include <juce_core/juce_core.h>
 
-// Global queue to store file paths for each deck
 extern juce::Array<juce::Array<juce::String>> globalFileQueue;
 
 void initializeGlobalState();

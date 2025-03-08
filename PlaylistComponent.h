@@ -56,5 +56,7 @@ private:
     DeckGUI* deckGUI1;
     DeckGUI* deckGUI2;
 
+    juce::Label emptyPlaylistLabel;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlaylistComponent)
 };

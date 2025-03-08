@@ -13,11 +13,11 @@
 //==============================================================================
 PlaylistComponent::PlaylistComponent(DeckGUI* deck1, DeckGUI* deck2) : deckGUI1(deck1), deckGUI2(deck2) {
 
-    tableComponent.getHeader().addColumn("Track Title / Description", 1, 400);
-    tableComponent.getHeader().addColumn("", 2, 200);
-    tableComponent.getHeader().addColumn("", 3, 200);
+    tableComponent.getHeader().addColumn("Track Title / Description", 1, 350);
+    tableComponent.getHeader().addColumn("", 2, 150);
+    tableComponent.getHeader().addColumn("", 3, 150);
+    tableComponent.getHeader().addColumn("", 4, 150);
     tableComponent.setModel(this);
-
     addAndMakeVisible(tableComponent);
 }
 
@@ -28,12 +28,8 @@ void PlaylistComponent::paint(juce::Graphics& g) {
 
     g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear the background
 
-    g.setColour(juce::Colours::grey);
+    g.setColour(juce::Colours::aqua);
     g.drawRect(getLocalBounds(), 1);   // draw an outline around the component
-
-    g.setColour(juce::Colours::white);
-    g.setFont(juce::FontOptions(14.0f));
-    g.drawText("Drag files here to add them to your playlist", getLocalBounds(), juce::Justification::centredTop, true);   // draw some placeholder text
 }
 
 void PlaylistComponent::resized() {
@@ -76,7 +72,7 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
         }
         return textEditor;
     }
-    if (columnId == 2) { // buttons to queue tracks
+    if (columnId == 2) { // send to deck 1
         auto* btn = dynamic_cast<juce::TextButton*>(existingComponentToUpdate);
         if (btn == nullptr) {
             btn = new juce::TextButton("Push to Deck 1");
@@ -86,10 +82,20 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
         }
         return btn;
     }
-    if (columnId == 3) { // buttons to queue tracks
+    if (columnId == 3) { // send to deck 2
         auto* btn = dynamic_cast<juce::TextButton*>(existingComponentToUpdate);
         if (btn == nullptr) {
             btn = new juce::TextButton("Push to Deck 2");
+            juce::String id = juce::String(rowNumber) + "-" + juce::String(columnId);
+            btn->setComponentID(id);
+            btn->addListener(this);
+        }
+        return btn;
+    }
+    if (columnId == 4) { // delete
+        auto* btn = dynamic_cast<juce::TextButton*>(existingComponentToUpdate);
+        if (btn == nullptr) {
+            btn = new juce::TextButton("Remove");
             juce::String id = juce::String(rowNumber) + "-" + juce::String(columnId);
             btn->setComponentID(id);
             btn->addListener(this);
@@ -103,44 +109,35 @@ void PlaylistComponent::buttonClicked(juce::Button* button) {
     juce::String id = button->getComponentID(); 
     DBG("Button clicked: " + id);
 
-    
     juce::StringArray tokens;
     tokens.addTokens(id, "-", ""); //first token is the row number, second token is the position of stored file address in fileLocation array
 
-    if (tokens.size() < 2) {
-        DBG("PlaylistComponent::buttonClicked - Invalid button ID format");
+    int tableRow = tokens[0].getIntValue(); // rows
+    int tableColumn = tokens[1].getIntValue() - 1; //column 2 = deck 1, column 3 = deck 2, column 4 = remove button
+    DBG("tableRow: " << tableRow << " tableColumn: " << tableColumn);
+
+    if (tableRow < 0 || tableRow >= fileLocation.size()) {
+        DBG("PlaylistComponent::buttonClicked - Invalid file index: " << tableRow);
         return;
     }
 
-    int fileIndex = tokens[0].getIntValue();
-    int deckNumber = tokens[1].getIntValue() - 1; //column 2 = deck 1, column 3 = deck 2
-    DBG("deckNum: " << deckNumber << " address pos in array: " << fileIndex);
+    if (tableRow >= 0 && tableRow < fileLocation.size()) {
+        juce::String filePath = fileLocation[tableRow];
 
-    if (deckNumber < 1 || deckNumber > globalFileQueue.size()) {
-        DBG("PlaylistComponent::buttonClicked - Invalid deck number");
-        return;
-    }
+        globalFileQueue.getReference(tableColumn - 1).add(filePath);
+        DBG("PlaylistComponent::buttonClicked - Added file to Deck " + juce::String(tableColumn));
 
-    // Get the file path from the stored playlist
-    if (fileIndex >= 0 && fileIndex < fileLocation.size()) {
-        juce::String filePath = fileLocation[fileIndex];
-
-        // Store the file path in the correct deck queue
-        globalFileQueue.getReference(deckNumber - 1).add(filePath);
-        DBG("PlaylistComponent::buttonClicked - Added file to Deck " + juce::String(deckNumber));
-
-        if (deckNumber == 1) {
+        if (tableColumn == 1) {
             deckGUI1->loadFile(filePath);
         }
-        else if (deckNumber == 2) {
+        if (tableColumn == 2) {
             deckGUI2->loadFile(filePath);
         }
     }
-    else {
-        DBG("PlaylistComponent::buttonClicked - Invalid file index");
+    if (tableColumn == 3) { // "Remove" button
+        DBG("Removing file at index: " << tableRow);
     }
 }
-
 
 bool PlaylistComponent::isInterestedInFileDrag(const juce::StringArray& files) {
     DBG("PlaylistComponent::isInterestedInFileDrag");
@@ -154,5 +151,5 @@ void PlaylistComponent::filesDropped(const juce::StringArray& files, int x, int 
         fileLocation.push_back(file.getFullPathName());
     }
     tableComponent.updateContent();
-    DBG("PlaylistComponent::filesDropped");
+    DBG("PlaylistComponent::filesDropped " << fileLocation.size() << " files stored");
 }

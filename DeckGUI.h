@@ -67,5 +67,8 @@ private:
 
     juce::FileChooser fChooser{ "Select a file" };
 
+    juce::Image recordCover1;
+    juce::Image recordCover2;
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeckGUI)
 };

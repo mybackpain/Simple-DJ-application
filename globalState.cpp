@@ -10,12 +10,11 @@
 
 #include "globalState.h"
 
-juce::Array<juce::Array<juce::String>> globalFileQueue; // Declare global array
+juce::Array<juce::Array<juce::String>> globalFileQueue; 
 
-// Initialize the array with two empty juce::Array<String> elements
 void initializeGlobalState()
 {
-    globalFileQueue.add(juce::Array<juce::String>()); // Deck 1 queue
-    globalFileQueue.add(juce::Array<juce::String>()); // Deck 2 queue
-    DBG("test");
+    globalFileQueue.add(juce::Array<juce::String>()); //deck 1 queue
+    globalFileQueue.add(juce::Array<juce::String>()); //deck 2 queue
+    DBG("global state initialised");
 }
