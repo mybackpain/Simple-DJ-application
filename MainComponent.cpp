@@ -1,7 +1,7 @@
 #include "MainComponent.h"
 
 //==============================================================================
-MainComponent::MainComponent()
+MainComponent::MainComponent() : playlistComponent(&deckGUI1, &deckGUI2)
 {
     // Make sure you set the size of the component after
     // you add any child components.

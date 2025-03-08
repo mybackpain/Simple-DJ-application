@@ -41,6 +41,8 @@ public:
 
     void timerCallback() override;
 
+    void loadFile(const juce::String& filePath);
+
 private:
 
     juce::Label fileNameLabel;

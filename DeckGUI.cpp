@@ -215,6 +215,19 @@ void DeckGUI::updateFileName(juce::String fileName) {
     fileNameLabel.setColour(juce::Label::textColourId, juce::Colours::lightblue);
 }
 
+void DeckGUI::loadFile(const juce::String& filePath) {
+    juce::File file{ filePath };  // Convert the path string to a juce::File object
+
+    if (file.existsAsFile()) {
+        player->loadURL(juce::URL{ file }); // Load the file into the player
+        updateFileName(file.getFileNameWithoutExtension()); // Update displayed file name
+        DBG("DeckGUI::loadFile - Loaded file: " + filePath);
+    }
+    else {
+        DBG("DeckGUI::loadFile - Error: File does not exist");
+    }
+}
+
 void DeckGUI::timerCallback() {
     waveformDisplay.setPositionRelative(player->getPositionRelative());
 }

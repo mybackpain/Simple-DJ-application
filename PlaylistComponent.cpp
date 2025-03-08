@@ -11,7 +11,7 @@
 #include "PlaylistComponent.h"
 
 //==============================================================================
-PlaylistComponent::PlaylistComponent() {
+PlaylistComponent::PlaylistComponent(DeckGUI* deck1, DeckGUI* deck2) : deckGUI1(deck1), deckGUI2(deck2) {
 
     tableComponent.getHeader().addColumn("Track Title / Description", 1, 400);
     tableComponent.getHeader().addColumn("", 2, 200);
@@ -99,19 +99,6 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
     return existingComponentToUpdate;
 }
 
-//void PlaylistComponent::buttonClicked(juce::Button* button) {
-//    juce::String id = button->getComponentID();
-//
-//    std::string delimiter = "-";
-//    juce::StringArray tokens;
-//    tokens.addTokens(id, delimiter, "\"");
-//
-//    for (int i = 0; i < tokens.size(); ++i)
-//    {
-//        DBG(tokens[i]); // Print each token to the debugger
-//    }
-//}
-
 void PlaylistComponent::buttonClicked(juce::Button* button) {
     juce::String id = button->getComponentID(); 
     DBG("Button clicked: " + id);
@@ -142,10 +129,10 @@ void PlaylistComponent::buttonClicked(juce::Button* button) {
         globalFileQueue.getReference(deckNumber - 1).add(filePath);
         DBG("PlaylistComponent::buttonClicked - Added file to Deck " + juce::String(deckNumber));
 
-        if (deckNumber == 0) {
+        if (deckNumber == 1) {
             deckGUI1->loadFile(filePath);
         }
-        else if (deckNumber == 1) {
+        else if (deckNumber == 2) {
             deckGUI2->loadFile(filePath);
         }
     }
