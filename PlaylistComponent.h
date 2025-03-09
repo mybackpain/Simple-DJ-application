@@ -56,6 +56,9 @@ private:
     DeckGUI* deckGUI1;
     DeckGUI* deckGUI2;
 
+    juce::TextButton savePlaylistButton{ "Save playlist" };
+    juce::TextButton loadPlaylistButton{ "Load playlist" };
+
     void loadPlaylist();
     void savePlaylist();
 

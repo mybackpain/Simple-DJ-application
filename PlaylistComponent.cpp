@@ -12,7 +12,8 @@
 
 //==============================================================================
 PlaylistComponent::PlaylistComponent(DeckGUI* deck1, DeckGUI* deck2) : deckGUI1(deck1), deckGUI2(deck2) {
-    juce::Colour berkeleyBlue(18, 53, 91);
+    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
+
     tableComponent.getHeader().addColumn("Track Title / Description", 1, 350);
     tableComponent.getHeader().addColumn("", 2, 150);
     tableComponent.getHeader().addColumn("", 3, 150);
@@ -22,6 +23,14 @@ PlaylistComponent::PlaylistComponent(DeckGUI* deck1, DeckGUI* deck2) : deckGUI1(
     addAndMakeVisible(tableComponent);
 
     loadPlaylist();
+
+    addAndMakeVisible(loadPlaylistButton);
+    loadPlaylistButton.setColour(juce::TextButton::buttonColourId, darkPurple);
+    loadPlaylistButton.addListener(this);
+    
+    addAndMakeVisible(savePlaylistButton);
+    savePlaylistButton.setColour(juce::TextButton::buttonColourId, darkPurple);
+    savePlaylistButton.addListener(this);
 }
 
 PlaylistComponent::~PlaylistComponent() {
@@ -33,8 +42,10 @@ void PlaylistComponent::paint(juce::Graphics& g) {
 }
 
 void PlaylistComponent::resized() {
-    tableComponent.setBounds(0, 0, getWidth(), getHeight());
+    tableComponent.setBounds(0, 0, getWidth(), getHeight() - 20);
     trackTitleEditor.setBounds(0, 0, getWidth() - 20, 30);
+    loadPlaylistButton.setBounds(getWidth() - 100, getHeight()-20, 50, 20);
+    savePlaylistButton.setBounds(getWidth() - 50, getHeight()-20, 50, 20);
 }
 
 int PlaylistComponent::getNumRows() {
@@ -111,14 +122,12 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
 
 void PlaylistComponent::buttonClicked(juce::Button* button) {
     juce::String id = button->getComponentID();
-    DBG("Button clicked: " + id);
 
     juce::StringArray tokens;
     tokens.addTokens(id, "-", ""); //first token is the row number, second token is the position of stored file address in fileLocation array
 
     int tableRow = tokens[0].getIntValue(); // rows
     int tableColumn = tokens[1].getIntValue() - 1; //column 2 = deck 1, column 3 = deck 2, column 4 = remove button
-    DBG("tableRow: " << tableRow << " tableColumn: " << tableColumn);
 
     if (tableColumn == 1 || tableColumn == 2) {
         juce::String filePath = fileLocation[tableRow];
@@ -140,8 +149,16 @@ void PlaylistComponent::buttonClicked(juce::Button* button) {
         if (tableRow >= 0 && tableRow < static_cast<int>(trackTitles.size())) {
             trackTitles.erase(trackTitles.begin() + tableRow); 
         }
-        savePlaylist();
+        DBG("PlaylistComponent::buttonClicked - item removed");
         tableComponent.updateContent();
+    }
+    if (button == &loadPlaylistButton) {
+        DBG("PlaylistComponent::buttonClicked loadPlaylistButton");
+        loadPlaylist();
+    }
+    if (button == &savePlaylistButton) {
+        DBG("PlaylistComponent::buttonClicked savePlaylistButton");
+        savePlaylist();
     }
 }
 
@@ -154,7 +171,6 @@ void PlaylistComponent::updateTableContentAndRebuildButtons() {
     }
     tableComponent.updateContent();
 }
-
 
 bool PlaylistComponent::isInterestedInFileDrag(const juce::StringArray& files) {
     DBG("PlaylistComponent::isInterestedInFileDrag");
@@ -171,8 +187,8 @@ void PlaylistComponent::filesDropped(const juce::StringArray& files, int x, int 
     DBG("PlaylistComponent::filesDropped " << fileLocation.size() << " files stored");
 }
 
-void PlaylistComponent::savePlaylist() {
-    juce::File playlistFile(juce::File::getSpecialLocation(juce::File::userDocumentsDirectory).getChildFile("playlist.json"));
+void PlaylistComponent::savePlaylist() { // save in CWD
+    juce::File playlistFile(juce::File::getCurrentWorkingDirectory().getChildFile("playlist.json"));
 
     juce::DynamicObject::Ptr jsonObject = new juce::DynamicObject();
     juce::Array<juce::var> tracksArray;
@@ -184,23 +200,37 @@ void PlaylistComponent::savePlaylist() {
     jsonObject->setProperty("tracks", tracksArray);
     juce::var jsonData = juce::var(jsonObject.get());
 
-    playlistFile.replaceWithText(juce::JSON::toString(jsonData));
+    if (playlistFile.replaceWithText(juce::JSON::toString(jsonData))) {
+        DBG("Playlist saved to: " << playlistFile.getFullPathName() << " track array size: " << juce::String(tracksArray.size()));
+    }
+    else {
+        DBG("Failed to save playlist.");
+    }
 }
 
 void PlaylistComponent::loadPlaylist() {
-    juce::File playlistFile(juce::File::getSpecialLocation(juce::File::userDocumentsDirectory).getChildFile("playlist.json"));
-
+    juce::File playlistFile(juce::File::getCurrentWorkingDirectory().getChildFile("playlist.json"));
     if (playlistFile.existsAsFile()) {
+        DBG("JSON file found");
         juce::var jsonData = juce::JSON::parse(playlistFile.loadFileAsString());
 
         if (jsonData.isObject()) {
+            DBG("JSON data object recognised");
             if (auto* tracksArray = jsonData.getProperty("tracks", juce::var()).getArray()) {
                 fileLocation.clear();
+                int x = 0;
                 for (auto& track : *tracksArray) {
                     fileLocation.push_back(track.toString());
+                    trackTitles.push_back(track.toString());
+                    x += 1;
+                    DBG("Tracks added: " << x << " : " << track.toString());
                 }
+                DBG("JSON data loaded");
                 tableComponent.updateContent();
+                tableComponent.repaint();
             }
         }
     }
+    DBG("Entries in fileLocation contains: " << fileLocation.size());
+    DBG("Entries in fileLocation contains: " << trackTitles.size());
 }
