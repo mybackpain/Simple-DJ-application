@@ -12,11 +12,13 @@
 
 //==============================================================================
 PlaylistComponent::PlaylistComponent(DeckGUI* deck1, DeckGUI* deck2) : deckGUI1(deck1), deckGUI2(deck2) {
+    juce::Colour berkeleyBlue(18, 53, 91);
     tableComponent.getHeader().addColumn("Track Title / Description", 1, 350);
     tableComponent.getHeader().addColumn("", 2, 150);
     tableComponent.getHeader().addColumn("", 3, 150);
     tableComponent.getHeader().addColumn("", 4, 150);
     tableComponent.setModel(this);
+    tableComponent.setColour(juce::TableListBox::backgroundColourId, berkeleyBlue);
     addAndMakeVisible(tableComponent);
 
     loadPlaylist();
@@ -26,12 +28,7 @@ PlaylistComponent::~PlaylistComponent() {
 }
 
 void PlaylistComponent::paint(juce::Graphics& g) {
-    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
-
-    g.fillAll(berkeleyBlue);
-    //g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear the background
-
-    g.setColour(pennRed);
+    g.setColour(juce::Colours::grey);
     g.drawRect(getLocalBounds(), 1);   // draw an outline around the component
 }
 
@@ -44,15 +41,19 @@ int PlaylistComponent::getNumRows() {
     return trackTitles.size();
 }
 void PlaylistComponent::paintRowBackground(juce::Graphics& g, int rowNumber, int width, int height, bool rowIsSelected) {
+    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
+    g.fillRect(0, 0, width, height);
     if (rowIsSelected) {
-        g.fillAll(juce::Colours::orange);
+        g.fillAll(darkPurple);
     }
     else {
-        g.fillAll(juce::Colours::darkgrey);
+        g.fillAll(berkeleyBlue);
     }
 }
 void PlaylistComponent::paintCell(juce::Graphics& g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) {
     g.drawText(trackTitles[rowNumber], 2, 0, width - 4, height - 2, juce::Justification::centredLeft, true);
+    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
+    g.fillAll(berkeleyBlue);
 }
 
 juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int columnId, bool isRowSelected, juce::Component* existingComponentToUpdate) {
@@ -109,7 +110,7 @@ juce::Component* PlaylistComponent::refreshComponentForCell(int rowNumber, int c
 }
 
 void PlaylistComponent::buttonClicked(juce::Button* button) {
-    juce::String id = button->getComponentID(); 
+    juce::String id = button->getComponentID();
     DBG("Button clicked: " + id);
 
     juce::StringArray tokens;
@@ -119,12 +120,7 @@ void PlaylistComponent::buttonClicked(juce::Button* button) {
     int tableColumn = tokens[1].getIntValue() - 1; //column 2 = deck 1, column 3 = deck 2, column 4 = remove button
     DBG("tableRow: " << tableRow << " tableColumn: " << tableColumn);
 
-    if (tableRow < 0 || tableRow >= fileLocation.size()) {
-        DBG("PlaylistComponent::buttonClicked - Invalid file index: " << tableRow);
-        return;
-    }
-
-    if (tableRow >= 0 && tableRow < fileLocation.size()) {
+    if (tableColumn == 1 || tableColumn == 2) {
         juce::String filePath = fileLocation[tableRow];
 
         globalFileQueue.getReference(tableColumn - 1).add(filePath);
@@ -137,10 +133,28 @@ void PlaylistComponent::buttonClicked(juce::Button* button) {
             deckGUI2->loadFile(filePath);
         }
     }
-    if (tableColumn == 3) { // "Remove" button
-        DBG("Removing file at index: " << tableRow);
+    if (tableColumn == 3) {
+        if (tableRow >= 0 && tableRow < static_cast<int>(fileLocation.size())) {
+            fileLocation.erase(fileLocation.begin() + tableRow);
+        }
+        if (tableRow >= 0 && tableRow < static_cast<int>(trackTitles.size())) {
+            trackTitles.erase(trackTitles.begin() + tableRow); 
+        }
+        savePlaylist();
+        tableComponent.updateContent();
     }
 }
+
+void PlaylistComponent::updateTableContentAndRebuildButtons() {
+    for (int row = 0; row < fileLocation.size(); ++row) {
+        juce::TextButton* removeButton = dynamic_cast<juce::TextButton*>(tableComponent.getCellComponent(3, row));
+        if (removeButton != nullptr) {
+            removeButton->setComponentID(juce::String(row) + "-4");
+        }
+    }
+    tableComponent.updateContent();
+}
+
 
 bool PlaylistComponent::isInterestedInFileDrag(const juce::StringArray& files) {
     DBG("PlaylistComponent::isInterestedInFileDrag");

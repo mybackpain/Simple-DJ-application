@@ -25,7 +25,7 @@ DeckGUI::DeckGUI(
 
     addAndMakeVisible(posSlider);
     posSlider.addListener(this);
-    posSlider.setRange(0.1, 1.0);
+    posSlider.setRange(0.000001, 1.0);
     posSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
     posSlider.setColour(juce::Slider::backgroundColourId, berkeleyBlue.brighter(0.2f));
     posSlider.setColour(juce::Slider::trackColourId, berkeleyBlue.brighter(0.2f));
@@ -49,7 +49,7 @@ DeckGUI::DeckGUI(
     addAndMakeVisible(speedSlider);
     speedSlider.setSliderStyle(juce::Slider::LinearVertical);
     speedSlider.addListener(this);
-    speedSlider.setRange(0.1, 2.0);
+    speedSlider.setRange(0.0001, 2.0);
     speedSlider.setValue(1.0);
     speedSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 35, 20);
     speedSlider.setColour(juce::Slider::backgroundColourId, berkeleyBlue.brighter(0.2f));
@@ -59,7 +59,7 @@ DeckGUI::DeckGUI(
     addAndMakeVisible(volumeSlider);
     volumeSlider.setSliderStyle(juce::Slider::LinearVertical);
     volumeSlider.addListener(this);
-    volumeSlider.setRange(0.1, 2.0);
+    volumeSlider.setRange(0.0001, 2.0);
     volumeSlider.setValue(1.0);
     volumeSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 35, 20);
     volumeSlider.setColour(juce::Slider::backgroundColourId, berkeleyBlue.brighter(0.2f));
@@ -120,10 +120,10 @@ void DeckGUI::paint(juce::Graphics& g) {
     double recordCenterX = getWidth() / 2.0;
     double recordCenterY;
     if (getWidth() > getHeight()) {
-        recordCenterY = getHeight() / 8 * 3 + recordRadius;
+        recordCenterY = getHeight() / 8 * 3 + recordRadius + 10;
     }
     else {
-        recordCenterY = getHeight() / 8 * 5;
+        recordCenterY = getHeight() / 8 * 5 + 2;
     }
     g.fillEllipse(recordCenterX - recordRadius, recordCenterY - recordRadius, recordRadius * 2, recordRadius * 2);
 

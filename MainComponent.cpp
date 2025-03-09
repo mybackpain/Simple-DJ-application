@@ -53,10 +53,9 @@ void MainComponent::releaseResources() {
 }
 
 //==============================================================================
-void MainComponent::paint(juce::Graphics& g)
-{
-    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-    g.fillAll(juce::Colours::gainsboro);
+void MainComponent::paint(juce::Graphics& g) {
+    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
+    g.fillAll(berkeleyBlue);
 }
 
 void MainComponent::resized() {
