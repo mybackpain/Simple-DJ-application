@@ -12,23 +12,26 @@
 
 //==============================================================================
 PlaylistComponent::PlaylistComponent(DeckGUI* deck1, DeckGUI* deck2) : deckGUI1(deck1), deckGUI2(deck2) {
-
     tableComponent.getHeader().addColumn("Track Title / Description", 1, 350);
     tableComponent.getHeader().addColumn("", 2, 150);
     tableComponent.getHeader().addColumn("", 3, 150);
     tableComponent.getHeader().addColumn("", 4, 150);
     tableComponent.setModel(this);
     addAndMakeVisible(tableComponent);
+
+    loadPlaylist();
 }
 
 PlaylistComponent::~PlaylistComponent() {
 }
 
 void PlaylistComponent::paint(juce::Graphics& g) {
+    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
 
-    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear the background
+    g.fillAll(berkeleyBlue);
+    //g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));   // clear the background
 
-    g.setColour(juce::Colours::aqua);
+    g.setColour(pennRed);
     g.drawRect(getLocalBounds(), 1);   // draw an outline around the component
 }
 
@@ -152,4 +155,38 @@ void PlaylistComponent::filesDropped(const juce::StringArray& files, int x, int 
     }
     tableComponent.updateContent();
     DBG("PlaylistComponent::filesDropped " << fileLocation.size() << " files stored");
+}
+
+void PlaylistComponent::savePlaylist() {
+    juce::File playlistFile(juce::File::getSpecialLocation(juce::File::userDocumentsDirectory).getChildFile("playlist.json"));
+
+    juce::DynamicObject::Ptr jsonObject = new juce::DynamicObject();
+    juce::Array<juce::var> tracksArray;
+
+    for (const auto& file : fileLocation) {
+        tracksArray.add(file);
+    }
+
+    jsonObject->setProperty("tracks", tracksArray);
+    juce::var jsonData = juce::var(jsonObject.get());
+
+    playlistFile.replaceWithText(juce::JSON::toString(jsonData));
+}
+
+void PlaylistComponent::loadPlaylist() {
+    juce::File playlistFile(juce::File::getSpecialLocation(juce::File::userDocumentsDirectory).getChildFile("playlist.json"));
+
+    if (playlistFile.existsAsFile()) {
+        juce::var jsonData = juce::JSON::parse(playlistFile.loadFileAsString());
+
+        if (jsonData.isObject()) {
+            if (auto* tracksArray = jsonData.getProperty("tracks", juce::var()).getArray()) {
+                fileLocation.clear();
+                for (auto& track : *tracksArray) {
+                    fileLocation.push_back(track.toString());
+                }
+                tableComponent.updateContent();
+            }
+        }
+    }
 }

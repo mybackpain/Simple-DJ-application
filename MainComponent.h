@@ -4,7 +4,7 @@
 #include "DJAudioPlayer.h"
 #include "DeckGUI.h"
 #include "PlaylistComponent.h"
-#include "globalState.h"
+#include "GlobalState.h"
 
 //==============================================================================
 /*

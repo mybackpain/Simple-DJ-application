@@ -25,28 +25,27 @@ WaveformDisplay::~WaveformDisplay(){
 }
 
 void WaveformDisplay::paint (juce::Graphics& g){
+    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
 
-    g.fillAll (getLookAndFeel().findColour (juce::ResizableWindow::backgroundColourId));   // clear the background
+    g.fillAll (berkeleyBlue);   // clear the background
 
-    g.setColour (juce::Colours::grey);
-    g.drawRect (getLocalBounds(), 1);   // draw an outline around the component
+    g.setColour(juce::Colours::grey); // outline around WaveformDisplay instance
+    g.drawRect(getLocalBounds(), 1);
 
     if (fileLoaded) {
         audioThumb.drawChannel(g, getLocalBounds(), 0, audioThumb.getTotalLength(), 0, 1);
     }
     else {
-        g.setColour(juce::Colours::orange);
-        g.setFont(juce::FontOptions(20.0f));
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::FontOptions(16.0f));
         g.drawText("File not loaded", getLocalBounds(), juce::Justification::centred, true);
     }
-
     g.setColour(juce::Colours::lightgreen);
     if (position != 0) {
         if (position >= 0 && position <= getWidth()) {
             g.drawRect(position * getWidth(), 0, getWidth() / 40, getHeight());
         }
     }
-
 }
 
 void WaveformDisplay::resized(){

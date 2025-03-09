@@ -21,20 +21,16 @@ DeckGUI::DeckGUI(
     player(_player),
     waveformDisplay(formatManagerToUse, cacheToUse)
 {
-    addAndMakeVisible(playButton);
-    playButton.addListener(this);
+    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
 
-    addAndMakeVisible(stopButton);
-    stopButton.addListener(this);
-
-    addAndMakeVisible(loadButton);
-    loadButton.addListener(this);
-
-    addAndMakeVisible(fadeInButton);
-    fadeInButton.addListener(this);
-
-    addAndMakeVisible(fadeOutButton);
-    fadeOutButton.addListener(this);
+    addAndMakeVisible(posSlider);
+    posSlider.addListener(this);
+    posSlider.setRange(0.1, 1.0);
+    posSlider.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 80, 20);
+    posSlider.setColour(juce::Slider::backgroundColourId, berkeleyBlue.brighter(0.2f));
+    posSlider.setColour(juce::Slider::trackColourId, berkeleyBlue.brighter(0.2f));
+    posSlider.setColour(juce::Slider::thumbColourId, darkPurple.brighter(0.4f));
+    //posSlider.setValue(DJAudioPlayer::getPositionRelative());
 
     addAndMakeVisible(speedLabel);
     speedLabel.setText("Speed");
@@ -43,18 +39,6 @@ DeckGUI::DeckGUI(
     speedLabel.setColour(juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
     speedLabel.setJustification(juce::Justification::centred);
 
-    addAndMakeVisible(speedSlider);
-    speedSlider.setSliderStyle(juce::Slider::LinearVertical);
-    speedSlider.addListener(this);
-    speedSlider.setRange(0.1, 2.0);
-    speedSlider.setValue(1.0);
-    speedSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
-
-    addAndMakeVisible(posSlider);
-    posSlider.addListener(this);
-    posSlider.setRange(0.1, 1.0);
-    //posSlider.setValue(DJAudioPlayer::getPositionRelative());
-
     addAndMakeVisible(volumeLabel);
     volumeLabel.setText("Volume");
     volumeLabel.setReadOnly(true);
@@ -62,12 +46,45 @@ DeckGUI::DeckGUI(
     volumeLabel.setColour(juce::TextEditor::backgroundColourId, juce::Colours::transparentBlack);
     volumeLabel.setJustification(juce::Justification::centred);
 
+    addAndMakeVisible(speedSlider);
+    speedSlider.setSliderStyle(juce::Slider::LinearVertical);
+    speedSlider.addListener(this);
+    speedSlider.setRange(0.1, 2.0);
+    speedSlider.setValue(1.0);
+    speedSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 35, 20);
+    speedSlider.setColour(juce::Slider::backgroundColourId, berkeleyBlue.brighter(0.2f));
+    speedSlider.setColour(juce::Slider::trackColourId, berkeleyBlue.brighter(0.2f));
+    speedSlider.setColour(juce::Slider::thumbColourId, darkPurple.brighter(0.4f));
+
     addAndMakeVisible(volumeSlider);
     volumeSlider.setSliderStyle(juce::Slider::LinearVertical);
     volumeSlider.addListener(this);
     volumeSlider.setRange(0.1, 2.0);
     volumeSlider.setValue(1.0);
-    volumeSlider.setTextBoxStyle(juce::Slider::NoTextBox, false, 0, 0);
+    volumeSlider.setTextBoxStyle(juce::Slider::TextBoxAbove, false, 35, 20);
+    volumeSlider.setColour(juce::Slider::backgroundColourId, berkeleyBlue.brighter(0.2f));
+    volumeSlider.setColour(juce::Slider::trackColourId, berkeleyBlue.brighter(0.2f));
+    volumeSlider.setColour(juce::Slider::thumbColourId, darkPurple.brighter(0.4f));
+
+    addAndMakeVisible(playButton);
+    playButton.setColour(juce::TextButton::buttonColourId, darkPurple);
+    playButton.addListener(this);
+
+    addAndMakeVisible(stopButton);
+    stopButton.setColour(juce::TextButton::buttonColourId, darkPurple);
+    stopButton.addListener(this);
+
+    addAndMakeVisible(loadButton);
+    loadButton.setColour(juce::TextButton::buttonColourId, darkPurple);
+    loadButton.addListener(this);
+
+    addAndMakeVisible(fadeInButton);
+    fadeInButton.setColour(juce::TextButton::buttonColourId, darkPurple);
+    fadeInButton.addListener(this);
+
+    addAndMakeVisible(fadeOutButton);
+    fadeOutButton.setColour(juce::TextButton::buttonColourId, darkPurple);
+    fadeOutButton.addListener(this);
 
     startTimer(500);
 
@@ -76,7 +93,7 @@ DeckGUI::DeckGUI(
     addAndMakeVisible(fileNameLabel);
     fileNameLabel.setJustificationType(juce::Justification::centred);
     fileNameLabel.setColour(juce::Label::textColourId, juce::Colours::white);
-    fileNameLabel.setFont(juce::Font(14.0f, juce::Font::bold));
+    fileNameLabel.setFont(juce::Font(16.0f, juce::Font::bold));
     
     juce::File recordImageFile1 = juce::File::getCurrentWorkingDirectory().getChildFile("recordCover1.jpg");
     if (recordImageFile1.existsAsFile()) {
@@ -91,7 +108,9 @@ DeckGUI::~DeckGUI()
 }
 
 void DeckGUI::paint(juce::Graphics& g) {
-    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
+
+    g.fillAll(berkeleyBlue);
 
     g.setColour(juce::Colours::grey); // create outline around DeckGUI instance
     g.drawRect(getLocalBounds(), 1);
@@ -133,17 +152,17 @@ void DeckGUI::resized() {
     fileNameLabel.setBounds(0 * rowW, 0 * rowH, rowW * 6, rowH * 1);
     waveformDisplay.setBounds(0 * rowW, 1 * rowH, getWidth(), rowH * 1);
 
-    speedLabel.setBounds(0 * rowW, 2 * rowH, rowW * 1, rowH * 1);
     posSlider.setBounds(1 * rowW, 2 * rowH, rowW * 4, rowH * 1);
-    volumeLabel.setBounds(5 * rowW, 2 * rowH, rowW * 1, rowH * 1);
-    speedSlider.setBounds(0 * rowW, 3 * rowH, rowW * 1, rowH * 4);
-    volumeSlider.setBounds(5 * rowW, 3 * rowH, rowW * 1, rowH * 4);
+    speedLabel.setBounds(0 * rowW, 3 * rowH, rowW * 1, rowH * 1);
+    volumeLabel.setBounds(5 * rowW, 3 * rowH, rowW * 1, rowH * 1);
+    speedSlider.setBounds(0 * rowW, 4 * rowH, rowW * 1, rowH * 3);
+    volumeSlider.setBounds(5 * rowW, 4 * rowH, rowW * 1, rowH * 3);
 
-    fadeInButton.setBounds(0 * rowW + rowW / 6, 7 * rowH, rowW * 1, rowH * 1);
-    playButton.setBounds(1 * rowW + rowW / 6 * 2, 7 * rowH, rowW * 1, rowH * 1);
-    stopButton.setBounds(2 * rowW + rowW / 6 * 3, 7 * rowH, rowW * 1, rowH * 1);
-    fadeOutButton.setBounds(3 * rowW + rowW / 6 * 4, 7 * rowH, rowW * 1, rowH * 1);
-    loadButton.setBounds(4 * rowW + rowW / 6 * 5, 7 * rowH, rowW * 1, rowH * 1);
+    fadeInButton.setBounds(0 * rowW + rowW / 6, 7 * rowH, rowW * 1, rowH * 1 - 10);
+    playButton.setBounds(1 * rowW + rowW / 6 * 2, 7 * rowH, rowW * 1, rowH * 1 - 10);
+    stopButton.setBounds(2 * rowW + rowW / 6 * 3, 7 * rowH, rowW * 1, rowH * 1 - 10);
+    fadeOutButton.setBounds(3 * rowW + rowW / 6 * 4, 7 * rowH, rowW * 1, rowH * 1 - 10);
+    loadButton.setBounds(4 * rowW + rowW / 6 * 5, 7 * rowH, rowW * 1, rowH * 1 - 10);
 }
 
 void DeckGUI::buttonClicked(juce::Button* button) {
@@ -204,14 +223,14 @@ bool DeckGUI::isInterestedInFileDrag(const juce::StringArray& files) {
 void DeckGUI::filesDropped(const juce::StringArray& files, int x, int y) {
     DBG("File dropped");
     if (files.size() == 1) {
-        juce::File file{ files[0] };  // Convert the first string to a juce::File
+        juce::File file{ files[0] };  //convert string juce::File
         player->loadURL(juce::URL{ file });
-        updateFileName(file.getFileNameWithoutExtension()); // Correct function call
+        updateFileName(file.getFileNameWithoutExtension());
         DBG("DeckGUI::filesDropped, fileLoaded set to true");
     }
 }
 
-//cleans file name of file type
+//cleans file name for display at top of DeckGUI
 void DeckGUI::updateFileName(juce::String fileName) {
     juce::String editedFileName = fileName;
     juce::StringArray replacedWord = { ".mp3", ".wav" };
@@ -223,15 +242,16 @@ void DeckGUI::updateFileName(juce::String fileName) {
     }
     fileNameLabel.setText("Playing: " + editedFileName, juce::dontSendNotification);
     fileNameLabel.setFont(juce::Font("Arial", 16.0f, juce::Font::bold));
-    fileNameLabel.setColour(juce::Label::textColourId, juce::Colours::lightblue);
+    fileNameLabel.setColour(juce::Label::textColourId, juce::Colours::white);
 }
 
 void DeckGUI::loadFile(const juce::String& filePath) {
-    juce::File file{ filePath };  // Convert the path string to a juce::File object
+    juce::File file{ filePath };  // convert string to file object
 
     if (file.existsAsFile()) {
-        player->loadURL(juce::URL{ file }); // Load the file into the player
-        updateFileName(file.getFileNameWithoutExtension()); // Update displayed file name
+        player->loadURL(juce::URL{ file });
+        updateFileName(file.getFileNameWithoutExtension());
+        waveformDisplay.loadURL(juce::URL{ file });
         DBG("DeckGUI::loadFile - Loaded file: " + filePath);
     }
     else {

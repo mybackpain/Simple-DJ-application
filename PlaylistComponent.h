@@ -11,7 +11,7 @@
 #pragma once
 #include <vector>
 #include <JuceHeader.h>
-#include "globalState.h"
+#include "GlobalState.h"
 #include "DeckGUI.h"
 
 //==============================================================================
@@ -56,7 +56,8 @@ private:
     DeckGUI* deckGUI1;
     DeckGUI* deckGUI2;
 
-    juce::Label emptyPlaylistLabel;
+    void loadPlaylist();
+    void savePlaylist();
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(PlaylistComponent)
 };
