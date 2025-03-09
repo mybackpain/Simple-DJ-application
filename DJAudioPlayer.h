@@ -44,10 +44,10 @@ private:
 
     juce::ResamplingAudioSource resampleSource{ &transportSource,false,2 };
 
+    ///////////////////////////////////////////////////////////// controls fade, fade duration
+
     enum FadeState { NONE, FADE_IN, FADE_OUT };
     FadeState fadeState = NONE;
-
-
     double currentGain = 0.0;
     void timerCallback();
 };

@@ -30,23 +30,19 @@ public:
     void paint(juce::Graphics&) override;
     void resized() override;
 
-    //button listener
-    void buttonClicked(juce::Button*) override;
-    //slider listener
-    void sliderValueChanged(juce::Slider*) override;
+    void buttonClicked(juce::Button*) override;// button listener
+    void sliderValueChanged(juce::Slider*) override; // slider listener
 
-    //drag and drop
-    bool isInterestedInFileDrag(const juce::StringArray& files) override;
+    bool isInterestedInFileDrag(const juce::StringArray& files) override; // drag and drop
     void filesDropped(const juce::StringArray& files, int x, int y) override;
 
-    void timerCallback() override;
+    void timerCallback() override; //updates waveform display
 
     void loadFile(const juce::String& filePath);
 
 private:
 
-    juce::Label fileNameLabel;
-    void updateFileName(const juce::String fileName);
+    ///////////////////////////////////////////////////////////// buttons, sliders, labels, images
 
     juce::TextButton playButton{ "PLAY" };
     juce::TextButton stopButton{ "STOP" };
@@ -61,13 +57,18 @@ private:
     juce::TextEditor speedLabel;
     juce::TextEditor volumeLabel;
 
-    DJAudioPlayer* player;
+    juce::Image recordCover1;
 
+    ///////////////////////////////////////////////////////////// reference pointers and instances
+
+    DJAudioPlayer* player;
     WaveformDisplay waveformDisplay;
 
-    juce::FileChooser fChooser{ "Select a file" };
+    ///////////////////////////////////////////////////////////// file import
 
-    juce::Image recordCover1;
+    juce::FileChooser fChooser{ "Select a file" };
+    juce::Label fileNameLabel;
+    void updateFileName(const juce::String fileName);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeckGUI)
 };

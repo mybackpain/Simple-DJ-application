@@ -35,9 +35,5 @@ private:
     bool fileLoaded;
     double position;
 
-    juce::Colour pennRed;
-    juce::Colour berkeleyBlue;
-    juce::Colour darkPurple;
-
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (WaveformDisplay)
 };

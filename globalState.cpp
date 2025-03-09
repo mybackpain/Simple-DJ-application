@@ -8,7 +8,7 @@
   ==============================================================================
 */
 
-#include "globalState.h"
+#include "GlobalState.h"
 
 juce::Array<juce::Array<juce::String>> globalFileQueue; 
 
