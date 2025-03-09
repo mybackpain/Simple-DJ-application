@@ -13,6 +13,7 @@
 #include <JuceHeader.h>
 #include "DJAudioPlayer.h"
 #include "WaveformDisplay.h"
+#include "VUDisplay.h"
 
 //==============================================================================
 /*
@@ -38,7 +39,7 @@ public:
 
     void timerCallback() override; //updates waveform display
 
-    void loadFile(const juce::String& filePath);
+    void loadFile(const juce::String& filePath); // loading music file
 
 private:
 
@@ -69,6 +70,11 @@ private:
     juce::FileChooser fChooser{ "Select a file" };
     juce::Label fileNameLabel;
     void updateFileName(const juce::String fileName);
+
+    ///////////////////////////////////////////////////////////// VU
+
+    VUDisplay vuDisplay;
+    void updateVUMeter(float level);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeckGUI)
 };

@@ -11,7 +11,7 @@
 #include "DJAudioPlayer.h"
 
 
-DJAudioPlayer::DJAudioPlayer(juce::AudioFormatManager& _formatManager) : formatManager(_formatManager) {
+DJAudioPlayer::DJAudioPlayer(juce::AudioFormatManager& _formatManager, DeckGUI& _deckGUI) : formatManager(_formatManager), deckGUI(_deckGUI) {
 }
 DJAudioPlayer::~DJAudioPlayer() {
 }

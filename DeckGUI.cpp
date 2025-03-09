@@ -86,10 +86,6 @@ DeckGUI::DeckGUI(
     fadeOutButton.setColour(juce::TextButton::buttonColourId, darkPurple);
     fadeOutButton.addListener(this);
 
-    startTimer(500);
-
-    addAndMakeVisible(waveformDisplay);
-
     addAndMakeVisible(fileNameLabel);
     fileNameLabel.setJustificationType(juce::Justification::centred);
     fileNameLabel.setColour(juce::Label::textColourId, juce::Colours::white);
@@ -100,6 +96,11 @@ DeckGUI::DeckGUI(
         recordCover1 = juce::ImageFileFormat::loadFrom(recordImageFile1);
         DBG("Record image 1 loaded");
     }
+
+    startTimer(500); //update interval for waveformDisplay
+    addAndMakeVisible(waveformDisplay);
+
+    addAndMakeVisible(vuDisplay);
 }
 
 DeckGUI::~DeckGUI()
@@ -113,7 +114,7 @@ void DeckGUI::paint(juce::Graphics& g) {
     g.fillAll(berkeleyBlue);
 
     g.setColour(juce::Colours::grey); // create outline around DeckGUI instance
-    g.drawRect(getLocalBounds(), 1);
+    g.drawRect(getLocalBounds(), 4);
 
     g.setColour(juce::Colours::black); // draw black "record disk"
     double recordRadius = getHeight() / 4 - 10;
@@ -149,8 +150,9 @@ void DeckGUI::resized() {
     double rowH = getHeight() / 8;
     double rowW = getWidth() / 6;
 
-    fileNameLabel.setBounds(0 * rowW, 0 * rowH, rowW * 6, rowH * 1);
-    waveformDisplay.setBounds(0 * rowW, 1 * rowH, getWidth(), rowH * 1);
+    fileNameLabel.setBounds(0 * rowW, 0 * rowH, getWidth(), rowH * 1);
+    waveformDisplay.setBounds(0 * rowW, 1 * rowH, rowW * 4, rowH * 1);
+    vuDisplay.setBounds(4 * rowW, 1 * rowH, rowW * 2, rowH * 1);
 
     posSlider.setBounds(1 * rowW, 2 * rowH, rowW * 4, rowH * 1);
     speedLabel.setBounds(0 * rowW, 3 * rowH, rowW * 1, rowH * 1);
@@ -259,6 +261,10 @@ void DeckGUI::loadFile(const juce::String& filePath) {
     }
 }
 
-void DeckGUI::timerCallback() {
+void DeckGUI::timerCallback() { //update waveformDisplay
     waveformDisplay.setPositionRelative(player->getPositionRelative());
+}
+
+void DeckGUI::updateVUMeter(float level) {
+    vuDisplay.setLevel(level);  // Update the VU display with the new level
 }

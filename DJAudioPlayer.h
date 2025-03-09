@@ -11,11 +11,13 @@
 #pragma once
 #include <JuceHeader.h>
 
+class DeckGUI;
+
 class DJAudioPlayer : public juce::AudioSource, public juce::Timer {
 public:
 
     //constructor and destructor
-    DJAudioPlayer(juce::AudioFormatManager& _formatManager);
+    DJAudioPlayer(juce::AudioFormatManager& _formatManager, DeckGUI& _deckGUI);
     ~DJAudioPlayer();
 
     void prepareToPlay(int samplesPerBlockExpected, double sampleRate) override;
@@ -50,4 +52,8 @@ private:
     FadeState fadeState = NONE;
     double currentGain = 0.0;
     void timerCallback();
+
+    ///////////////////////////////////////////////////////////// pointer back to the DeckGUI
+
+    DeckGUI& deckGUI;
 };

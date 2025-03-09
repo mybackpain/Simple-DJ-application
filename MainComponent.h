@@ -34,9 +34,9 @@ private:
 
     /////////////////////////////////////////////////////////////
 
-    DJAudioPlayer player1{ formatManager };
+    DJAudioPlayer player1{ formatManager , deckGUI1};
     DeckGUI deckGUI1{ &player1, formatManager, thumbCache };
-    DJAudioPlayer player2{ formatManager };
+    DJAudioPlayer player2{ formatManager, deckGUI2 };
     DeckGUI deckGUI2{ &player2, formatManager, thumbCache };
 
     /////////////////////////////////////////////////////////////

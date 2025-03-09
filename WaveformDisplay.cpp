@@ -27,10 +27,10 @@ WaveformDisplay::~WaveformDisplay(){
 void WaveformDisplay::paint (juce::Graphics& g){
     juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
 
-    g.fillAll (berkeleyBlue);   // clear the background
+    g.fillAll (berkeleyBlue);
 
     g.setColour(juce::Colours::grey); // outline around WaveformDisplay instance
-    g.drawRect(getLocalBounds(), 1);
+    g.drawRect(getLocalBounds(), 4);
 
     if (fileLoaded) {
         audioThumb.drawChannel(g, getLocalBounds(), 0, audioThumb.getTotalLength(), 0, 1);
