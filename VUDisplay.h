@@ -21,5 +21,5 @@ public:
     void setLevel(float newLevel); // Call this to update the meter
 
 private:
-    float level = 0.0f; // Stores the current VU level
+    float level = 0.0f; // start at VU level 0
 };

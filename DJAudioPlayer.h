@@ -10,6 +10,7 @@
 
 #pragma once
 #include <JuceHeader.h>
+#include "DeckGUI.h"
 
 class DeckGUI;
 
@@ -56,4 +57,5 @@ private:
     ///////////////////////////////////////////////////////////// pointer back to the DeckGUI
 
     DeckGUI& deckGUI;
+    void processBlock(juce::AudioBuffer<float>& buffer);
 };

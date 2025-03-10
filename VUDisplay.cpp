@@ -20,15 +20,18 @@ void VUDisplay::paint(juce::Graphics& g) {
     g.setColour(juce::Colours::grey); // outline around VUDisplay instance
     g.drawRect(getLocalBounds(), 4);
 
-    float barHeight = getHeight() * level;
-    g.setColour(juce::Colours::green);
-    g.fillRect(0.0f, getHeight() - barHeight, static_cast<float>(getWidth()), barHeight);
+    float amplifiedLevel = level * 5.0f;
+    amplifiedLevel = juce::jlimit(0.0f, 1.0f, amplifiedLevel); // map to limit
+    float barHeight = getHeight() * amplifiedLevel;
+    g.setColour(darkPurple);
+    float rectHeight = juce::jmax(0.0f, barHeight - 5);
+    g.fillRect(5.0f, getHeight() - rectHeight - 5.0f, static_cast<float>(getWidth()) - 10.0f, rectHeight);
 }
 
 void VUDisplay::resized() {
 }
 
 void VUDisplay::setLevel(float newLevel) { // "map" values between 0 and 1
-    level = juce::jlimit(0.0f, 1.0f, newLevel); 
+    level = juce::jlimit(0.0f, 1.0f, newLevel);
     repaint();
 }

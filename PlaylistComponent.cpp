@@ -51,6 +51,7 @@ void PlaylistComponent::resized() {
 int PlaylistComponent::getNumRows() {
     return trackTitles.size();
 }
+
 void PlaylistComponent::paintRowBackground(juce::Graphics& g, int rowNumber, int width, int height, bool rowIsSelected) {
     juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);
     g.fillRect(0, 0, width, height);
@@ -61,6 +62,7 @@ void PlaylistComponent::paintRowBackground(juce::Graphics& g, int rowNumber, int
         g.fillAll(berkeleyBlue);
     }
 }
+
 void PlaylistComponent::paintCell(juce::Graphics& g, int rowNumber, int columnId, int width, int height, bool rowIsSelected) {
     g.drawText(trackTitles[rowNumber], 2, 0, width - 4, height - 2, juce::Justification::centredLeft, true);
     juce::Colour pennRed(149, 25, 12), berkeleyBlue(18, 53, 91), darkPurple(66, 0, 57);

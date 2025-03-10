@@ -12,6 +12,6 @@
 
 #include <juce_core/juce_core.h>
 
-extern juce::Array<juce::Array<juce::String>> globalFileQueue;
+extern juce::Array<juce::Array<juce::String>> globalFileQueue; // inner array holds songs, external array holds playlists
 
 void initializeGlobalState();

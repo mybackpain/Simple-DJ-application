@@ -30,7 +30,6 @@ DeckGUI::DeckGUI(
     posSlider.setColour(juce::Slider::backgroundColourId, berkeleyBlue.brighter(0.2f));
     posSlider.setColour(juce::Slider::trackColourId, berkeleyBlue.brighter(0.2f));
     posSlider.setColour(juce::Slider::thumbColourId, darkPurple.brighter(0.4f));
-    //posSlider.setValue(DJAudioPlayer::getPositionRelative());
 
     addAndMakeVisible(speedLabel);
     speedLabel.setText("Speed");
@@ -266,5 +265,5 @@ void DeckGUI::timerCallback() { //update waveformDisplay
 }
 
 void DeckGUI::updateVUMeter(float level) {
-    vuDisplay.setLevel(level);  // Update the VU display with the new level
+    vuDisplay.setLevel(level);  // update VUDisplay 
 }

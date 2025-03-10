@@ -33,6 +33,7 @@ void WaveformDisplay::paint (juce::Graphics& g){
     g.drawRect(getLocalBounds(), 4);
 
     if (fileLoaded) {
+        g.setColour(juce::Colours::grey);
         audioThumb.drawChannel(g, getLocalBounds(), 0, audioThumb.getTotalLength(), 0, 1);
     }
     else {
@@ -40,10 +41,10 @@ void WaveformDisplay::paint (juce::Graphics& g){
         g.setFont(juce::FontOptions(16.0f));
         g.drawText("File not loaded", getLocalBounds(), juce::Justification::centred, true);
     }
-    g.setColour(juce::Colours::lightgreen);
+    g.setColour(darkPurple);
     if (position != 0) {
         if (position >= 0 && position <= getWidth()) {
-            g.drawRect(position * getWidth(), 0, getWidth() / 40, getHeight());
+            g.drawRect(position * getWidth(), 0 + 5, getWidth() / 100, getHeight() - 10);
         }
     }
 }
@@ -65,7 +66,6 @@ void WaveformDisplay::loadURL(juce::URL audioURL) {
 }
 
 void WaveformDisplay::changeListenerCallback(juce::ChangeBroadcaster* source) {
-    DBG("WaveformDisplay::changeListenerCallback");
     repaint();
 }
 

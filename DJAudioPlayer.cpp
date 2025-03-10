@@ -12,7 +12,9 @@
 
 
 DJAudioPlayer::DJAudioPlayer(juce::AudioFormatManager& _formatManager, DeckGUI& _deckGUI) : formatManager(_formatManager), deckGUI(_deckGUI) {
+    DBG("DJAudioPlayer::DJAudioPlayer initialized.");
 }
+
 DJAudioPlayer::~DJAudioPlayer() {
 }
 
@@ -20,9 +22,19 @@ void DJAudioPlayer::prepareToPlay(int samplesPerBlockExpected, double sampleRate
     transportSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
     resampleSource.prepareToPlay(samplesPerBlockExpected, sampleRate);
 }
+
 void DJAudioPlayer::getNextAudioBlock(const juce::AudioSourceChannelInfo& bufferToFill) {
     resampleSource.getNextAudioBlock(bufferToFill);
+
+    if (bufferToFill.buffer->getNumChannels() > 0) {
+        float rms = bufferToFill.buffer->getRMSLevel(0, 0, bufferToFill.numSamples);
+
+        juce::MessageManager::callAsync([this, rms]() {
+            deckGUI.updateVUMeter(rms);
+            });
+    }
 }
+
 void DJAudioPlayer::releaseResources() {
     transportSource.releaseResources();
     resampleSource.releaseResources();
@@ -122,4 +134,10 @@ void DJAudioPlayer::timerCallback() {
             transportSource.stop();
         }
     }
+}
+
+void DJAudioPlayer::processBlock(juce::AudioBuffer<float>& buffer) {
+    float rms = buffer.getRMSLevel(0, 0, buffer.getNumSamples());
+    DBG("Processing audio. RMS Level: " << rms); 
+    deckGUI.updateVUMeter(rms);
 }

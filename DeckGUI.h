@@ -15,6 +15,8 @@
 #include "WaveformDisplay.h"
 #include "VUDisplay.h"
 
+class DJAudioPlayer;
+
 //==============================================================================
 /*
 */
@@ -40,6 +42,8 @@ public:
     void timerCallback() override; //updates waveform display
 
     void loadFile(const juce::String& filePath); // loading music file
+
+    void updateVUMeter(float level);
 
 private:
 
@@ -74,7 +78,6 @@ private:
     ///////////////////////////////////////////////////////////// VU
 
     VUDisplay vuDisplay;
-    void updateVUMeter(float level);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(DeckGUI)
 };
