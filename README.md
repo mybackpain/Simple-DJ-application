@@ -1,6 +1,8 @@
-# Title Project Overview: A concise description of the project, its purpose, and what it aims to achieve. 
+# OtoDecks 
 
-OtoDecks is a simple DJ application that allows the user to: play music, fade in and out music, navigate music using a seekbar or timecode, change music play speed and volume, view music waveform, create and delete playlists,
+OtoDecks is a simple DJ application that allows the user to: play music, mix tracks,fade in and out music, navigate music using a seekbar or timecode, change music play speed and volume, view music waveform, create and delete playlists.
+
+The purose of this project is to: create an OOP principled program with functions do not change the state of class or global scope variables unless that is the explicit purpose of a function (e.g., a setter) and use stateless code where possible. The code is organised into .h files with class interface definitions and .cpp files containing implementations of class function members.
 
 ## Installation Instructions: Clear steps on how to set up and install the project on different systems. 
 
